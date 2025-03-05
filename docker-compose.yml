@@ -1,0 +1,30 @@
+services:
+  api:
+    build: ./py_api
+    image: resume-parser-backend
+    environment:
+      - OPEN_AI_KEY=key
+    volumes:
+      - ./py_api:/py_api
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis-server
+
+  redis-server:
+    image: "redis:alpine"
+    command: redis-server
+    ports:
+      - "6379:6379"
+
+  celery:
+    build: ./py_api
+    command: celery -A run worker --loglevel INFO
+    image: resume-parser-celery
+    environment:
+      - CELERY_BROKER_URL=redis://redis-server:6379
+      - CELERY_RESULT_BACKEND=redis://redis-server:6379
+    depends_on:
+      - redis-server
+    volumes:
+      - ./py_api:/py_api
