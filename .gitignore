@@ -3,4 +3,5 @@
 *__pycache__*
 .DS_Store
 __DATA__
-.docker-compose.yml
+.dockerignore
+docker-compose.yml
