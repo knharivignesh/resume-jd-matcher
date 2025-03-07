@@ -105,3 +105,32 @@ class ResumeJob:
         current_app.logger.info(f"Resume extraction completed for job id: {self.id}")
 
         self.write_config("extracted_resume", data)
+
+    def ats_score(
+        self,
+    ):
+        prompt = """
+                You are a skilled ATS (Applicant Tracking System) scanner with a deep understanding of data science and ATS functionality.
+                You are given a resume and a job description.
+                Your task is to evaluate the resume against the job description and provide only the ATS score without the percentage sign or any additional explanation.
+                """
+
+        resume_data = self.read_resume_content_from_pdf(self.initial_resume_path)
+
+        openai_client = OpenAI(api_key=Config.OPEN_AI_KEY)
+
+        messages = [{"role": "system", "content": prompt}]
+
+        user_content = f"Job Description: {self.read_config()['job_description']}\n\nResume: {resume_data}"
+
+        messages.append({"role": "user", "content": user_content})
+
+        response = openai_client.chat.completions.create(
+            model=self.ai_model, messages=messages, temperature=0.0, max_tokens=1000
+        )
+
+        data = response.choices[0].message.content
+
+        current_app.logger.info(f"ATS score generated for job id: {self.id}")
+
+        self.write_config("initial_ats_score", data)
