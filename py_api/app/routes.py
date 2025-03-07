@@ -1,18 +1,32 @@
 from flask import Blueprint, request, current_app
-from .utils import Utils
-import os, sys
+import os
 from app.config import Config
+from app.resume_job import ResumeJob
+from app.tasks import start_resume_parsing
 
 base_api = Blueprint("base_api", __name__)
 
 os.makedirs(Config.UPLOAD_PATH, exist_ok=True)
 
 
-@base_api.route("/process-resume", methods=["POST"])
+@base_api.route("/resume-job", methods=["POST"])
 def process_resume() -> dict[str, object]:
-    doc = request.files["pdf_file"]
-    doc.save(os.path.join(Config.UPLOAD_PATH, "file.pdf"))
-    doc_path = os.path.join(Config.UPLOAD_PATH, "file.pdf")
-    data = Utils.read_file_from_path(doc_path)
+    try:
+        job_description = request.form.get("job_description")
+        doc = request.files["pdf_file"]
+    except Exception as e:
+        current_app.logger.error(f"Error in processing resume: {e}")
+        return {"error": "Error in processing resume"}
 
-    return Utils.parse_resume(data)
+    resume_job = ResumeJob()
+    resume_job.create_job(doc, job_description)
+
+    start_resume_parsing.delay({"job_id": resume_job.id})
+
+    return {"job_id": resume_job.id}
+
+
+@base_api.route("/resume-job/<job_id>", methods=["GET"])
+def get_resume_details(job_id: str) -> dict[str, object]:
+    resume_job = ResumeJob(job_id)
+    return resume_job.read_config()

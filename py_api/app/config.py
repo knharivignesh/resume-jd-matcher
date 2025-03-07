@@ -9,3 +9,6 @@ class Config:
         "key",
     )
     UPLOAD_PATH = "__DATA__"
+    RESUME_JOB_CONFIG = "config.json"
+    INITIAL_RESUME_FILE = "initial_resume.pdf"
+    PROCESSED_RESUME_FILE = "initial_resume.pdf"
