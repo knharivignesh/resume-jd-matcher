@@ -1,0 +1,133 @@
+
+<form class="form" [formGroup]="resumeForm" (ngSubmit)="onSubmit()">
+  <!-- Full Name -->
+  <mat-form-field appearance="fill">
+    <mat-label>Full Name</mat-label>
+    <input matInput id="full_name" formControlName="full_name" type="text" />
+  </mat-form-field>
+
+  <!-- Email -->
+  <mat-form-field appearance="fill">
+    <mat-label>Email</mat-label>
+    <input matInput id="email_id" formControlName="email_id" type="email" />
+  </mat-form-field>
+
+  <!-- GitHub Portfolio -->
+  <mat-form-field appearance="fill">
+    <mat-label>GitHub Portfolio</mat-label>
+    <input matInput id="github_portfolio" formControlName="github_portfolio" type="url" />
+  </mat-form-field>
+
+  <!-- LinkedIn -->
+  <mat-form-field appearance="fill">
+    <mat-label>LinkedIn</mat-label>
+    <input matInput id="linkedin_id" formControlName="linkedin_id" type="url" />
+  </mat-form-field>
+
+  <!-- Employment Details -->
+  <div formArrayName="employment_details">
+    <div *ngFor="let employment of employmentDetails.controls; let i = index" [formGroupName]="i">
+      <h3>Employment {{ i + 1 }}</h3>
+
+      <!-- Company -->
+      <mat-form-field appearance="fill">
+        <mat-label>Company</mat-label>
+        <input matInput formControlName="company" type="text" />
+      </mat-form-field>
+
+      <!-- Location -->
+      <mat-form-field appearance="fill">
+        <mat-label>Location</mat-label>
+        <input matInput formControlName="location" type="text" />
+      </mat-form-field>
+
+      <!-- Position -->
+      <mat-form-field appearance="fill">
+        <mat-label>Position</mat-label>
+        <input matInput formControlName="position" type="text" />
+      </mat-form-field>
+
+      <!-- Duration -->
+      <mat-form-field appearance="fill">
+        <mat-label>Duration</mat-label>
+        <input matInput formControlName="duration" type="text" />
+      </mat-form-field>
+
+      <!-- Projects -->
+      <div formArrayName="projects">
+        <div *ngFor="let project of $any(employment.get('projects')).controls; let j = index" [formGroupName]="j">
+          <h4>Project {{ j + 1 }}</h4>
+
+          <!-- Project Name -->
+          <mat-form-field appearance="fill">
+            <mat-label>Project Name</mat-label>
+            <input matInput formControlName="project_name" type="text" />
+          </mat-form-field>
+
+          <!-- Duration -->
+          <mat-form-field appearance="fill">
+            <mat-label>Duration</mat-label>
+            <input matInput formControlName="duration" type="text" />
+          </mat-form-field>
+
+          <!-- Description -->
+          <mat-form-field appearance="fill">
+            <mat-label>Description</mat-label>
+            <input matInput formControlName="description" type="text" />
+          </mat-form-field>
+
+          <!-- Technologies -->
+          <div formArrayName="technologies">
+            <mat-form-field appearance="fill">
+              <mat-label>Technologies</mat-label>
+              <mat-chip-set #chipList>
+                <mat-chip *ngFor="let technology of project.get('technologies').controls" [removable]="true"
+                  (removed)="removeTechnology(i, j)">
+                  {{ technology.value }}
+                  <button matChipRemove>
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip>
+              </mat-chip-set>
+              <input matInput [formControl]="project.get('technologies').controls[0]" placeholder="Add technology"
+                (keydown.enter)="addTechnology(i)" />
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Technical Skills -->
+
+  <div formArrayName="technical_skills">
+    <mat-form-field appearance="fill">
+      <mat-label>Technical Skills</mat-label>
+      <mat-chip-set #chipList>
+        <mat-chip *ngFor="let technology of technicalSkills.controls" [removable]="true">
+          {{ technology.value }}
+          <mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip>
+      </mat-chip-set>
+      <input matInput [formControl]="$any(technicalSkills.controls[0])" placeholder="Add technology" />
+    </mat-form-field>
+  </div>
+
+  <!-- Soft Skills -->
+  <div>
+    <mat-form-field appearance="fill">
+      <mat-label >Soft Skills</mat-label>
+      <mat-chip-set id="soft_skills" #chipList formArrayName="soft_skills">
+        <mat-chip *ngFor="let technology of softSkills.controls" [removable]="true">
+          {{ technology.value }}
+          <mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip>
+      </mat-chip-set>
+      <input #input matInput placeholder="Add skills" (keydown.enter)="addSoftSkills(input)"/>
+    </mat-form-field>
+  </div>
+
+  <div class="btn-container">
+    <button mat-raised-button color="primary" type="submit">Submit</button>
+  </div>
+</form>
