@@ -1,0 +1,25 @@
+
+.content {
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  
+  mat-card {
+    width: 80%;
+    height: 100%;
+    padding: 10px;
+  }
+  
+  .full-width {
+    width: 100%;
+  }
+  
+:host::ng-deep {
+    .mat-horizontal-content-container {
+      padding-top: 40px !important;
+    }
+    .mat-card-title {
+      padding-bottom: 10px !important;
+    }
+  }
