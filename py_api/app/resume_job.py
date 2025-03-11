@@ -106,7 +106,7 @@ class ResumeJob:
 
         self.write_config("extracted_resume", data)
 
-    def ats_score(
+    def generate_ats_score(
         self,
     ):
         prompt = """
