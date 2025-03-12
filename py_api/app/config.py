@@ -12,3 +12,4 @@ class Config:
     RESUME_JOB_CONFIG = "config.json"
     INITIAL_RESUME_FILE = "initial_resume.pdf"
     PROCESSED_RESUME_FILE = "initial_resume.pdf"
+    TEMPLATE_PATH = "templates"

@@ -30,3 +30,10 @@ def process_resume() -> dict[str, object]:
 def get_resume_details(job_id: str) -> dict[str, object]:
     resume_job = ResumeJob(job_id)
     return resume_job.read_config()
+
+
+@base_api.route("/write-resume/<job_id>/template/<template_id>", methods=["GET"])
+def write_pdf(job_id: str, template_id: str):
+    resume_job = ResumeJob(job_id)
+    resume_job.write_pdf(template_id)
+    return {}

@@ -5,3 +5,4 @@ gunicorn==23.0.0
 pypdf==5.3.0
 openai==1.65.1
 celery==5.4.0
+fillpdf==0.7.3

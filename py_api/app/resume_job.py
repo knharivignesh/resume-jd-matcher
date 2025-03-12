@@ -4,6 +4,7 @@ import os, sys
 from pypdf import PdfReader
 import json
 from openai import OpenAI
+from fillpdf import fillpdfs
 
 
 class ResumeJob:
@@ -16,7 +17,8 @@ class ResumeJob:
             self.id = self.generate_id()
             os.makedirs(os.path.join(Config.UPLOAD_PATH, self.id), exist_ok=True)
             with open(
-                os.path.join(Config.UPLOAD_PATH, self.id, Config.RESUME_JOB_CONFIG), "w"
+                os.path.join(Config.UPLOAD_PATxxH, self.id, Config.RESUME_JOB_CONFIG),
+                "w",
             ) as file:
                 json.dump({}, file)
         self.config_path = os.path.join(
@@ -24,6 +26,9 @@ class ResumeJob:
         )
         self.initial_resume_path = os.path.join(
             Config.UPLOAD_PATH, self.id, Config.INITIAL_RESUME_FILE
+        )
+        self.final_resume_path = os.path.join(
+            Config.UPLOAD_PATH, self.id, "final_resume.pdf"
         )
 
     def generate_id(self):
@@ -67,6 +72,19 @@ class ResumeJob:
             data += page.extract_text()
 
         return data
+
+    def write_pdf(self, template_id):
+        config = json.loads(self.read_config()["extracted_resume"].replace("```", ""))
+        final_data = {"name": config["full_name"], "email_id": config["email_id"]}
+        fillpdfs.print_form_fields(
+            os.path.join(Config.TEMPLATE_PATH, template_id + ".pdf")
+        )
+        fillpdfs.write_fillable_pdf(
+            os.path.join(Config.TEMPLATE_PATH, template_id + ".pdf"),
+            self.final_resume_path,
+            final_data,
+            flatten=True,
+        )
 
     def parse_resume(self):
         prompt = """
