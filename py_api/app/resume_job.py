@@ -1,10 +1,9 @@
 from flask import current_app
 from app.config import Config
-import os, sys
+import os, json, pdfkit
 from pypdf import PdfReader
-import json
 from openai import OpenAI
-from fillpdf import fillpdfs
+from jinja2 import Template
 
 
 class ResumeJob:
@@ -17,10 +16,11 @@ class ResumeJob:
             self.id = self.generate_id()
             os.makedirs(os.path.join(Config.UPLOAD_PATH, self.id), exist_ok=True)
             with open(
-                os.path.join(Config.UPLOAD_PATxxH, self.id, Config.RESUME_JOB_CONFIG),
+                os.path.join(Config.UPLOAD_PATH, self.id, Config.RESUME_JOB_CONFIG),
                 "w",
             ) as file:
                 json.dump({}, file)
+
         self.config_path = os.path.join(
             Config.UPLOAD_PATH, self.id, Config.RESUME_JOB_CONFIG
         )
@@ -72,19 +72,6 @@ class ResumeJob:
             data += page.extract_text()
 
         return data
-
-    def write_pdf(self, template_id):
-        config = json.loads(self.read_config()["extracted_resume"].replace("```", ""))
-        final_data = {"name": config["full_name"], "email_id": config["email_id"]}
-        fillpdfs.print_form_fields(
-            os.path.join(Config.TEMPLATE_PATH, template_id + ".pdf")
-        )
-        fillpdfs.write_fillable_pdf(
-            os.path.join(Config.TEMPLATE_PATH, template_id + ".pdf"),
-            self.final_resume_path,
-            final_data,
-            flatten=True,
-        )
 
     def parse_resume(self):
         prompt = """
@@ -152,3 +139,64 @@ class ResumeJob:
         current_app.logger.info(f"ATS score generated for job id: {self.id}")
 
         self.write_config("initial_ats_score", data)
+
+    def generate_final_pdf(self, template_id):
+        config = json.loads(self.read_config()["extracted_resume"].replace("```", ""))
+        self.generate_resume(
+            {},
+            template_id,
+        )
+
+    def generate_resume(self, data, template_id):
+        output_pdf = os.path.join(
+            Config.UPLOAD_PATH, self.id, f"{template_id}_{Config.PROCESSED_RESUME_FILE}"
+        )
+
+        template_path = os.path.join(Config.TEMPLATE_PATH, template_id + ".html")
+
+        output_html = self.initial_resume_path = os.path.join(
+            Config.UPLOAD_PATH, self.id, Config.OUTPUT_RESUME_HTML
+        )
+
+        with open(template_path, "r") as file:
+            template = Template(file.read())
+
+        data = {
+            "name": "John Doe",
+            "email": "johndoe@example.com",
+            "phone": "+1 234 567 890",
+            "summary": "Experienced software engineer with expertise in Python and web development.",
+            "experience": [
+                {
+                    "title": "Software Engineer",
+                    "company": "TechCorp",
+                    "duration": "2018 - Present",
+                    "responsibilities": [
+                        "Developed REST APIs using Django.",
+                        "Led a team of 5 developers.",
+                        "Improved system performance by 30%.",
+                    ],
+                },
+                {
+                    "title": "Junior Developer",
+                    "company": "WebWorks",
+                    "duration": "2015 - 2018",
+                    "responsibilities": [
+                        "Built responsive UI components.",
+                        "Optimized database queries.",
+                        "Automated CI/CD pipeline.",
+                    ],
+                },
+            ],
+            "skills": ["Python", "Django", "Flask", "JavaScript", "React", "AWS"],
+        }
+
+        # Render the template with user data
+        rendered_html = template.render(data)
+
+        # Save the HTML file (optional for debugging)
+        with open(output_html, "w") as file:
+            file.write(rendered_html)
+
+        # Convert HTML to PDF
+        pdfkit.from_file(output_html, output_pdf)
