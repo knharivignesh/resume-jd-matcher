@@ -1,0 +1,34 @@
+<html>
+<head>
+    <style>
+        body { font-family: sans-serif; display: flex; }
+        .sidebar { width: 30%; background: #333; color: white; padding: 20px; }
+        .main { width: 70%; padding: 20px; }
+        .title { font-weight: bold; font-size: 18px; color: #0073e6; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <p>{{ name }}</p>
+        <p>{{ email }}</p>
+        <p>{{ phone }}</p>
+        <p>{{ linkedin }}</p>
+        <p class="title">Education</p>
+        {% for edu in education %}
+            <p>{{ edu.degree }} - {{ edu.institution }}</p>
+        {% endfor %}
+        <p class="title">Certifications</p>
+        {% for cert in certifications %}
+            <p>{{ cert.name }} - {{ cert.issuer }}</p>
+        {% endfor %}
+    </div>
+    <div class="main">
+        <p class="title">Summary</p>
+        <p>{{ summary }}</p>
+        <p class="title">Experience</p>
+        {% for job in experience %}
+            <p>{{ job.title }} at {{ job.company }} ({{ job.duration }})</p>
+        {% endfor %}
+    </div>
+</body>
+</html>

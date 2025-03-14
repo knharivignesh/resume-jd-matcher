@@ -1,0 +1,64 @@
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .header { text-align: center; }
+        .name { font-size: 28px; font-weight: bold; }
+        .contact { font-size: 14px; }
+        .section { margin-top: 20px; }
+        .title { font-weight: bold; font-size: 20px; color: #333; border-bottom: 2px solid #333; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <p class="name">{{ name }}</p>
+        <p class="contact">{{ email }} | {{ phone }} | {{ linkedin }}</p>
+    </div>
+    
+    <div class="section">
+        <p class="title">Summary</p>
+        <p>{{ summary }}</p>
+    </div>
+    
+    <div class="section">
+        <p class="title">Experience</p>
+        {% for job in experience %}
+            <p><strong>{{ job.title }}</strong> at {{ job.company }} ({{ job.duration }})</p>
+            <ul>
+                {% for responsibility in job.responsibilities %}
+                    <li>{{ responsibility }}</li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    </div>
+    
+    <div class="section">
+        <p class="title">Education</p>
+        {% for edu in education %}
+            <p><strong>{{ edu.degree }}</strong> - {{ edu.institution }} ({{ edu.year }})</p>
+        {% endfor %}
+    </div>
+    
+    <div class="section">
+        <p class="title">Projects</p>
+        {% for project in projects %}
+            <p><strong>{{ project.name }}</strong></p>
+            <p>{{ project.description }}</p>
+        {% endfor %}
+    </div>
+    
+    <div class="section">
+        <p class="title">Certifications</p>
+        {% for cert in certifications %}
+            <p>{{ cert.name }} - {{ cert.issuer }}</p>
+        {% endfor %}
+    </div>
+    
+    <div class="section">
+        <p class="title">Publications</p>
+        {% for pub in publications %}
+            <p>{{ pub.title }} - {{ pub.publisher }}</p>
+        {% endfor %}
+    </div>
+</body>
+</html>
