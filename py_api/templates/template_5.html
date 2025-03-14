@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Resume</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; margin: 20px; background: #f9f9f9; }
+        .container { background: white; padding: 30px; max-width: 800px; margin: auto; border-radius: 5px; }
+        .header { text-align: center; }
+        .section { margin-top: 20px; }
+        .section-title { font-size: 18px; font-weight: bold; border-bottom: 2px solid #333; padding-bottom: 5px; }
+        .job-title { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header"><h1>{{ name }}</h1><p>{{ email }} | {{ phone }}</p></div>
+        <div class="section"><div class="section-title">Summary</div><p>{{ summary }}</p></div>
+        <div class="section"><div class="section-title">Experience</div>
+            {% for job in experience %}
+                <p class="job-title">{{ job.title }} at {{ job.company }} ({{ job.duration }})</p>
+                <ul>{% for responsibility in job.responsibilities %}<li>{{ responsibility }}</li>{% endfor %}</ul>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

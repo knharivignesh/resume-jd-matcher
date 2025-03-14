@@ -1,4 +1,4 @@
-from flask import Blueprint, request, current_app
+from flask import Blueprint, request, current_app, send_file
 import os
 from app.config import Config
 from app.resume_job import ResumeJob
@@ -32,8 +32,14 @@ def get_resume_details(job_id: str) -> dict[str, object]:
     return resume_job.read_config()
 
 
-@base_api.route("/write-resume/<job_id>/template/<template_id>", methods=["GET"])
+@base_api.route("/generate-resume/<job_id>/template/<template_id>", methods=["GET"])
 def write_pdf(job_id: str, template_id: str):
     resume_job = ResumeJob(job_id)
-    resume_job.write_pdf(template_id)
-    return {}
+    resume_job.generate_final_pdf(template_id)
+    path = os.path.join(
+        "..",
+        Config.UPLOAD_PATH,
+        job_id,
+        f"{template_id}_{Config.PROCESSED_RESUME_FILE}",
+    )
+    return send_file(path, as_attachment=True)
