@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { FileUpload } from '@/components/FileUpload';
 import { JobDescriptionInput } from '@/components/JobDescriptionInput';
 import { useResumeContext } from '@/contexts/ResumeContext';
-import { parseResume } from '@/services/resumeService';
+import { createJobID, parseResume,pollUntilValue } from '@/services/resumeService';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowRight, FileType, Briefcase } from 'lucide-react';
 
@@ -55,11 +55,24 @@ const Upload = () => {
     setIsProcessing(true);
     setIsLoading(true);
     setError(null);
+    try {
+      const jobIdRes = await createJobID(file, description.trim());
+      const jobId = jobIdRes.data.job_id;
+      console.log("JOB_ID :", jobId);
+      const value = await pollUntilValue(jobId);
+      console.log("Extracted Value :", value);
+      console.log(value);
+    } catch (error) {
+      toast({
+        title: "Processing failed",
+        description: "Error connecting to server",
+        variant: "destructive",
+      });
+    }
 
     try {
-      // Parse the resume
+
       const parsedResume = await parseResume(file);
-      
       // Update context
       setResumeFile(file);
       setResumeData(parsedResume);

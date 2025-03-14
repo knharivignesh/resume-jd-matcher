@@ -1,6 +1,7 @@
 from flask import Flask
 from celery import Celery, Task
 from flask import Flask
+from flask_cors import CORS
 from app.config import Config
 from .routes import base_api
 from logging.config import dictConfig
@@ -43,7 +44,8 @@ def create_app() -> Flask:
 
     # from swapapi.cm.routes import cm
     app.logger.info("SWAP API blueprint import completed!")
-
+    cors = CORS()
+    cors.init_app(app)
     app.register_blueprint(base_api)
     app.logger.info("SWAP API blueprint register completed!")
 

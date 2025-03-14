@@ -22,6 +22,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/upload" element={<Upload />} />
+            <Route path="/results/:id" element={<Results />} />
             <Route path="/results" element={<Results />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
