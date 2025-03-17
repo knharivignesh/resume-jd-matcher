@@ -1,34 +1,57 @@
-<html>
-<head>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resume - {{ fullName }}</title>
     <style>
-        body { font-family: sans-serif; display: flex; }
-        .sidebar { width: 30%; background: #333; color: white; padding: 20px; }
-        .main { width: 70%; padding: 20px; }
-        .title { font-weight: bold; font-size: 18px; color: #0073e6; }
+      body {
+        font-family: Arial, sans-serif;
+        background: #e3f2fd;
+        color: #0d47a1;
+        padding: 20px;
+      }
+      .container {
+        max-width: 800px;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+      }
+      h1 {
+        color: #1565c0;
+      }
+      .section {
+        margin-top: 20px;
+      }
     </style>
-</head>
-<body>
-    <div class="sidebar">
-        <p>{{ name }}</p>
-        <p>{{ email }}</p>
-        <p>{{ phone }}</p>
-        <p>{{ linkedin }}</p>
-        <p class="title">Education</p>
-        {% for edu in education %}
-            <p>{{ edu.degree }} - {{ edu.institution }}</p>
-        {% endfor %}
-        <p class="title">Certifications</p>
-        {% for cert in certifications %}
-            <p>{{ cert.name }} - {{ cert.issuer }}</p>
-        {% endfor %}
+  </head>
+  <body>
+    <div class="container">
+      <h1>{{ fullName }}</h1>
+      <p>
+        Email: {% if emailId %}{{ emailId }}{% endif %} {% if githubPortfolio
+        %}| <a href="{{ githubPortfolio }}">GitHub</a>{% endif %} {% if
+        linkedinId %}| <a href="{{ linkedinId }}">LinkedIn</a>{% endif %}
+      </p>
+
+      {% if professionalSummary %}
+      <h2>Professional Summary</h2>
+      <p>{{ professionalSummary }}</p>
+      {% endif %} {% if experience %}
+      <h2>Experience</h2>
+      {% for job in experience %}
+      <div class="section">
+        <h3>{{ job.role }} at {{ job.companyName }}</h3>
+        <p><i>{{ job.duration }}</i></p>
+        {% if job.responsibilities %}
+        <ul>
+          {% for responsibility in job.responsibilities %}
+          <li>{{ responsibility }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+      {% endfor %} {% endif %}
     </div>
-    <div class="main">
-        <p class="title">Summary</p>
-        <p>{{ summary }}</p>
-        <p class="title">Experience</p>
-        {% for job in experience %}
-            <p>{{ job.title }} at {{ job.company }} ({{ job.duration }})</p>
-        {% endfor %}
-    </div>
-</body>
+  </body>
 </html>
