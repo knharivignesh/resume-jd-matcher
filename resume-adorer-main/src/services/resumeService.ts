@@ -32,7 +32,7 @@ return data.job_description && data.extracted_resume;
 }
 
 // Mock function to parse resume
-export const parseResume = async (file: File): Promise<ResumeData> => {
+export const parseResume = async (file?: File): Promise<ResumeData> => {
   // This is a mock implementation. In a real application, you would:
   // 1. Upload the file to a server
   // 2. Process it with a resume parser API or ML model
@@ -42,7 +42,7 @@ export const parseResume = async (file: File): Promise<ResumeData> => {
   await new Promise(resolve => setTimeout(resolve, 2000));
   
   // Return mock data based on file type
-  const fileName = file.name.toLowerCase();
+  // const fileName = file?.name?.toLowerCase() ?? '';
   
   // Generate a random unique ID for each array item
   const generateId = () => Math.random().toString(36).substring(2, 10);

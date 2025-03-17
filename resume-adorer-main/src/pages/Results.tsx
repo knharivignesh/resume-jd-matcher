@@ -1,38 +1,37 @@
 
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate , useParams} from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { ResumeEditor } from '@/components/ResumeEditor';
 import { MatchResults } from '@/components/MatchResults';
 import { TemplateGallery, templates } from '@/components/TemplateGallery';
-import { useResumeContext } from '@/contexts/ResumeContext';
-import { matchResumeWithJob } from '@/services/resumeService';
+import { ResumeData, useResumeContext } from '@/contexts/ResumeContext';
+import { matchResumeWithJob, parseResume, pollUntilValue } from '@/services/resumeService';
 import { ArrowLeft, FileText, CheckCircle2, LayoutTemplate } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 const Results = () => {
   const navigate = useNavigate();
   const { 
-    resumeData, 
     jobDescription, 
-    setResumeData, 
     isLoading, 
     setIsLoading, 
     error,
     selectedTemplate,
     setSelectedTemplate
   } = useResumeContext();
-  
+  let [resumeData, setResumeData] = useState(null);
   const [matchScore, setMatchScore] = useState(0);
   const [matchHighlights, setMatchHighlights] = useState<string[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [activeTab, setActiveTab] = useState("resume");
+  const { id } = useParams();
 
   useEffect(() => {
     // Redirect to upload page if no resume data
-    if (!resumeData) {
+    if (!id) {
       navigate('/');
       return;
     }
@@ -43,19 +42,30 @@ const Results = () => {
       setIsLoading(true);
 
       try {
+        const parsedResume = await pollUntilValue(id);
+        setResumeData(parsedResume);
+        console.log("Extracted Value :", parsedResume);
+      } catch (err) {
+      const parsedResume = await parseResume();
+      // Update context
+      setResumeData(parsedResume);
+        console.error('Error analyzing match:', err);
+      } finally {
         const matchResult = await matchResumeWithJob(resumeData, jobDescription);
         setMatchScore(matchResult.matchScore);
         setMatchHighlights(matchResult.highlights);
-      } catch (err) {
-        console.error('Error analyzing match:', err);
-      } finally {
         setIsAnalyzing(false);
         setIsLoading(false);
+        toast({
+          title: "Error Analyzing Resume",
+          description: `Please try after some time`,
+          variant: "destructive",
+        });
       }
     };
 
     analyzeMatch();
-  }, [resumeData, jobDescription, navigate, setIsLoading]);
+  }, []);
 
   const handleSaveChanges = (updatedData: any) => {
     setResumeData(updatedData);
