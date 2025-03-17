@@ -9,7 +9,8 @@ from jinja2 import Template
 class ResumeJob:
     def __init__(self, id=None):
         models = ["gpt-4o-mini", "gpt-4o", "openai-o3-mini", "openai-o1", "gpt-4.5"]
-        self.ai_model = models[0]
+        self.low_ai_model = models[0]
+        self.high_ai_model = models[1]
         if id:
             self.id = id
         else:
@@ -62,6 +63,7 @@ class ResumeJob:
     def create_job(self, doc, jd):
         doc.save(self.initial_resume_path)
         self.write_config("job_description", jd)
+        self.write_config("is_loading", True)
 
     def read_resume_content_from_pdf(self, path: str) -> str:
         reader = PdfReader(path)
@@ -78,16 +80,24 @@ class ResumeJob:
                 You are an AI bot designed to act as a professional for re-writing resumes.
                 You will be provided with a job description and resume. Based on this, Create a new resume
                 tailored for the job description. You can add the professional summary that includes metrics
-                and total years of experience. Rearrange the work highlights and keep the existing work experiences.
+                and total years of experience. Rearrange the work highlights and keep the existing work experiences and also don't miss any existing skills and responsibilities.
                 Include metrics in the achievements and incorporate the most important keywords from the job description in those achievements.
                 The answer needs to be in JSON format which follows the below given structure
                 {
                    "fullName": "",
                     "emailId": "",
+                    "phoneNumber": "",
                     "githubPortfolio": "",
                     "linkedinId": "",
                     "professionalSummary": "",
-                    "employmentDetails": [],
+                    "experience": [
+                        {
+                            "companyName": "",
+                            "role": "",
+                            "duration": "",     
+                            "responsibilities": []
+                        }
+                    ],
                     "technicalSkills": [],
                     "softSkills": [],
                     "achievements": []
@@ -100,24 +110,25 @@ class ResumeJob:
 
         messages = [{"role": "system", "content": prompt}]
 
-        user_content = resume_data
+        user_content = f"Job Description: {self.read_config()['job_description']}\n\nResume Content: {resume_data}"
 
         messages.append({"role": "user", "content": user_content})
 
         response = openai_client.chat.completions.create(
-            model=self.ai_model, messages=messages, temperature=0.0
+            model=self.low_ai_model, messages=messages, temperature=0.0
         )
 
         data = (
             response.choices[0]
             .message.content.replace("json", "")
             .replace("\n", "")
+            .replace("```", "")
             .strip()
         )
 
         current_app.logger.info(f"Resume extraction completed for job id: {self.id}")
 
-        self.write_config("extracted_resume", data)
+        self.write_config("extracted_resume", json.loads(data))
 
     def generate_ats_score(
         self,
@@ -139,7 +150,7 @@ class ResumeJob:
         messages.append({"role": "user", "content": user_content})
 
         response = openai_client.chat.completions.create(
-            model=self.ai_model, messages=messages, temperature=0.0, max_tokens=1000
+            model=self.low_ai_model, messages=messages, temperature=0.0, max_tokens=1000
         )
 
         data = response.choices[0].message.content
@@ -149,9 +160,9 @@ class ResumeJob:
         self.write_config("initial_ats_score", data)
 
     def generate_final_pdf(self, template_id):
-        config = json.loads(self.read_config()["extracted_resume"].replace("```", ""))
+        data = self.read_config()["extracted_resume"]
         self.generate_resume(
-            {},
+            data,
             template_id,
         )
 
@@ -168,36 +179,6 @@ class ResumeJob:
 
         with open(template_path, "r") as file:
             template = Template(file.read())
-
-        data = {
-            "name": "John Doe",
-            "email": "johndoe@example.com",
-            "phone": "+1 234 567 890",
-            "summary": "Experienced software engineer with expertise in Python and web development.",
-            "experience": [
-                {
-                    "title": "Software Engineer",
-                    "company": "TechCorp",
-                    "duration": "2018 - Present",
-                    "responsibilities": [
-                        "Developed REST APIs using Django.",
-                        "Led a team of 5 developers.",
-                        "Improved system performance by 30%.",
-                    ],
-                },
-                {
-                    "title": "Junior Developer",
-                    "company": "WebWorks",
-                    "duration": "2015 - 2018",
-                    "responsibilities": [
-                        "Built responsive UI components.",
-                        "Optimized database queries.",
-                        "Automated CI/CD pipeline.",
-                    ],
-                },
-            ],
-            "skills": ["Python", "Django", "Flask", "JavaScript", "React", "AWS"],
-        }
 
         # Render the template with user data
         rendered_html = template.render(data)
