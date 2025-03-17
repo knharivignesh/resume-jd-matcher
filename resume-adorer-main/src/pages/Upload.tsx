@@ -1,21 +1,18 @@
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { FileUpload } from '@/components/FileUpload';
 import { JobDescriptionInput } from '@/components/JobDescriptionInput';
 import { useResumeContext } from '@/contexts/ResumeContext';
-import { createJobID, parseResume,pollUntilValue } from '@/services/resumeService';
+import { createJobID } from '@/services/resumeService';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowRight, FileType, Briefcase } from 'lucide-react';
 
 const Upload = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { 
-    setResumeFile, 
-    setResumeData, 
-    setJobDescription, 
+  const {
     setIsLoading, 
     setError 
   } = useResumeContext();
@@ -59,9 +56,8 @@ const Upload = () => {
       const jobIdRes = await createJobID(file, description.trim());
       const jobId = jobIdRes.data.job_id;
       console.log("JOB_ID :", jobId);
-      const value = await pollUntilValue(jobId);
-      console.log("Extracted Value :", value);
-      console.log(value);
+      navigate(`/results/${jobId}`);
+      return;
     } catch (error) {
       toast({
         title: "Processing failed",
@@ -71,15 +67,9 @@ const Upload = () => {
     }
 
     try {
-
-      const parsedResume = await parseResume(file);
-      // Update context
-      setResumeFile(file);
-      setResumeData(parsedResume);
-      setJobDescription(description);
       
       // Navigate to results page
-      navigate('/results');
+      navigate('/results/3');
     } catch (error) {
       console.error('Error processing resume:', error);
       setError('Failed to process resume. Please try again.');
