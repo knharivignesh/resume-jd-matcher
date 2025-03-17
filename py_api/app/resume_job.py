@@ -70,15 +70,23 @@ class ResumeJob:
 
     def parse_resume(self):
         prompt = """
-                You are an AI bot designed to act as a professional for parsing resumes. You are given with resume and your job is to extract the following information from the resume:
-                1. full name
-                2. email id
-                3. github portfolio
-                4. linkedin id
-                5. employment details
-                6. technical skills
-                7. soft skills
-                Give the extracted information in parseable json format only
+                You are an AI bot designed to act as a professional for re-writing resumes.
+                You will be provided with a job description and resume. Based on this, Create a new resume
+                tailored for the job description. You can add the professional summary that includes metrics
+                and total years of experience. Rearrange the work highlights and keep the existing work experiences.
+                Include metrics in the achievements and incorporate the most important keywords from the job description in those achievements.
+                The answer needs to be in JSON format which follows the below given structure
+                {
+                   "fullName": "",
+                    "emailId": "",
+                    "githubPortfolio": "",
+                    "linkedinId": "",
+                    "professionalSummary": "",
+                    "employmentDetails": [],
+                    "technicalSkills": [],
+                    "softSkills": [],
+                    "achievements": []
+                }
                 """
 
         resume_data = self.read_resume_content_from_pdf(self.initial_resume_path)
