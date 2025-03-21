@@ -1,59 +1,23 @@
-
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from "react";
 
 // Define the resume data structure
 export interface ResumeData {
-  personal?: {
-    name?: string;
-    email?: string;
-    phone?: string;
-    location?: string;
-    linkedin?: string;
-    website?: string;
-  };
-  summary?: string;
-  experience?: Array<{
-    id: string;
-    title?: string;
-    company?: string;
-    location?: string;
-    startDate?: string;
-    endDate?: string;
-    description?: string;
-    highlights?: string[];
-  }>;
-  education?: Array<{
-    id: string;
-    institution?: string;
-    degree?: string;
-    field?: string;
-    startDate?: string;
-    endDate?: string;
-    gpa?: string;
-  }>;
-  skills?: Array<{
-    id: string;
-    name?: string;
-    level?: string;
-  }>;
-  certifications?: Array<{
-    id: string;
-    name?: string;
-    issuer?: string;
-    date?: string;
-  }>;
-  languages?: Array<{
-    id: string;
-    language?: string;
-    proficiency?: string;
-  }>;
-  projects?: Array<{
-    id: string;
-    name?: string;
-    description?: string;
-    url?: string;
-    highlights?: string[];
-  }>;
+  fullName: string;
+  emailId: string;
+  githubPortfolio?: string;
+  linkedinId: string;
+  professionalSummary?: string;
+  experience?: [
+    {
+      companyName?: string;
+      role?: string;
+      duration?: string;
+      responsibilities?: string[];
+    }
+  ];
+  technicalSkills?: string[];
+  softSkills?: string[];
+  achievements?: string[];
 }
 
 // Define the job description type
@@ -81,13 +45,13 @@ const ResumeContext = createContext<ResumeContextType>({
   setResumeFile: () => {},
   resumeData: null,
   setResumeData: () => {},
-  jobDescription: '',
+  jobDescription: "",
   setJobDescription: () => {},
   isLoading: false,
   setIsLoading: () => {},
   error: null,
   setError: () => {},
-  selectedTemplate: 'classic',
+  selectedTemplate: "classic",
   setSelectedTemplate: () => {},
 });
 
@@ -95,13 +59,15 @@ const ResumeContext = createContext<ResumeContextType>({
 export const useResumeContext = () => useContext(ResumeContext);
 
 // Provider component
-export const ResumeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const ResumeProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [resumeData, setResumeData] = useState<ResumeData | null>(null);
-  const [jobDescription, setJobDescription] = useState<JobDescription>('');
+  const [jobDescription, setJobDescription] = useState<JobDescription>("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedTemplate, setSelectedTemplate] = useState('classic');
+  const [selectedTemplate, setSelectedTemplate] = useState("classic");
 
   return (
     <ResumeContext.Provider
