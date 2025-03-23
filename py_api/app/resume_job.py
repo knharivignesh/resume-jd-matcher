@@ -75,13 +75,85 @@ class ResumeJob:
 
         return data
 
+    def rephrase_resume(self):
+        prompt = """
+                You are an AI assistant specializing in resume enhancement while ensuring accuracy, authenticity, and alignment with 
+                job descriptions. Given a candidates resume and a job description, rephrase the resume content to highlight relevant skills, 
+                experience, and achievements without altering actual experience or fabricating details. Maintain a high ATS score by using 
+                industry-relevant keywords and professional language while keeping the formatting clear and structured for readability.
+
+                Ensure that: 
+                    1. The candidates original skills, experience, and achievements remain factual.
+                    2. The wording is optimized for ATS compatibility by incorporating relevant keywords from the job description.
+                    3. The structure and clarity of each section are improved for readability and impact.
+                    4. Any unrelated experience is either kept concise or reframed to highlight transferable skills, but never fabricated.
+                    5. Format the output in the same structure as the original resume. Do not introduce any new experiences, 
+                    job roles, or skills that the candidate has not mentioned.
+                    6.The rephrased content seamlessly integrates into predefined templates (PDF, DOC) while preserving consistency. 
+                    instead of making assumptions or adding false information. 
+                    7. The final output should present the candidates true qualifications in a way that maximizes relevance for the given 
+                    role without misrepresentation.
+                    8. You can reorder the points if needed to match the job description.
+                    9. Mainly if the ATS score is below 10 between resume and JD give gaps and omit other JSON fields in the output.
+                    This should happen if ATS score is below 10 only otherwise give entire data.
+                    
+                The answer needs to be in JSON format which follows the below given structure also the input will be in this same format.
+                {
+                   "fullName": "",
+                    "emailId": "",
+                    "phoneNumber": "",
+                    "githubPortfolio": "",
+                    "linkedinId": "",
+                    "professionalSummary": "",
+                    "experience": [
+                        {
+                            "companyName": "",
+                            "role": "",
+                            "duration": "",     
+                            "responsibilities": []
+                        }
+                    ],
+                    "technicalSkills": [],
+                    "softSkills": [],
+                    "achievements": [],
+                    "gaps": []
+                }
+
+                """
+
+        resume_config = self.read_config()
+
+        openai_client = OpenAI(api_key=Config.OPEN_AI_KEY)
+
+        messages = [{"role": "system", "content": prompt}]
+
+        user_content = {
+            "jobDescription": resume_config["job_description"],
+            "resumeData": resume_config["extracted_resume"],
+        }
+
+        messages.append({"role": "user", "content": json.dumps(user_content)})
+
+        response = openai_client.chat.completions.create(
+            model=self.high_ai_model, messages=messages, temperature=0.0
+        )
+
+        data = (
+            response.choices[0]
+            .message.content.replace("json", "")
+            .replace("\n", "")
+            .replace("```", "")
+            .strip()
+        )
+
+        current_app.logger.info(f"Resume rephrasing completed for job id: {self.id}")
+
+        self.write_config("rephrased_resume", json.loads(data))
+
     def parse_resume(self):
         prompt = """
-                You are an AI bot designed to act as a professional for re-writing resumes.
-                You will be provided with a job description and resume. Based on this, Create a new resume
-                tailored for the job description. You can add the professional summary that includes metrics
-                and total years of experience. Rearrange the work highlights and keep the existing work experiences and also don't miss any existing skills and responsibilities.
-                Include metrics in the achievements and incorporate the most important keywords from the job description in those achievements.
+                You are an AI bot designed to act as a professional for parsing resumes. 
+                You are given with resume and your job is to extract the following information from the resume.
                 The answer needs to be in JSON format which follows the below given structure
                 {
                    "fullName": "",
@@ -100,7 +172,7 @@ class ResumeJob:
                     ],
                     "technicalSkills": [],
                     "softSkills": [],
-                    "achievements": []
+                    "achievements": [],
                 }
                 """
 
@@ -110,9 +182,7 @@ class ResumeJob:
 
         messages = [{"role": "system", "content": prompt}]
 
-        user_content = f"Job Description: {self.read_config()['job_description']}\n\nResume Content: {resume_data}"
-
-        messages.append({"role": "user", "content": user_content})
+        messages.append({"role": "user", "content": resume_data})
 
         response = openai_client.chat.completions.create(
             model=self.low_ai_model, messages=messages, temperature=0.0
@@ -130,24 +200,24 @@ class ResumeJob:
 
         self.write_config("extracted_resume", json.loads(data))
 
-    def generate_ats_score(
-        self,
-    ):
+    def generate_ats_score(self, key):
         prompt = """
                 You are a skilled ATS (Applicant Tracking System) scanner with a deep understanding of data science and ATS functionality.
                 You are given a resume and a job description.
                 Your task is to evaluate the resume against the job description and provide only the ATS score without the percentage sign or any additional explanation.
                 """
-
-        resume_data = self.read_resume_content_from_pdf(self.initial_resume_path)
+        resume_config = self.read_config()
 
         openai_client = OpenAI(api_key=Config.OPEN_AI_KEY)
 
         messages = [{"role": "system", "content": prompt}]
 
-        user_content = f"Job Description: {self.read_config()['job_description']}\n\nResume: {resume_data}"
+        user_content = {
+            "jobDescription": resume_config["job_description"],
+            "resumeData": resume_config[key],
+        }
 
-        messages.append({"role": "user", "content": user_content})
+        messages.append({"role": "user", "content": json.dumps(user_content)})
 
         response = openai_client.chat.completions.create(
             model=self.low_ai_model, messages=messages, temperature=0.0, max_tokens=1000
@@ -155,9 +225,9 @@ class ResumeJob:
 
         data = response.choices[0].message.content
 
-        current_app.logger.info(f"ATS score generated for job id: {self.id}")
+        current_app.logger.info(f"{key} ATS score generated for job id: {self.id}")
 
-        self.write_config("initial_ats_score", data)
+        self.write_config(f"{key}_ats_score", data)
 
     def generate_final_pdf(self, template_id):
         data = self.read_config()["extracted_resume"]

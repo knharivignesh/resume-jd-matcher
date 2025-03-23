@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { ReactNode, createContext, useContext, useState } from "react";
 
 // Define the resume data structure
 export interface ResumeData {
@@ -18,6 +18,7 @@ export interface ResumeData {
   technicalSkills?: string[];
   softSkills?: string[];
   achievements?: string[];
+  gaps?: [];
 }
 
 // Define the job description type
