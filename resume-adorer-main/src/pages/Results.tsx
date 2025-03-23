@@ -7,10 +7,11 @@ import { Card } from '@/components/ui/card';
 import { ResumeEditor } from '@/components/ResumeEditor';
 import { MatchResults } from '@/components/MatchResults';
 import { TemplateGallery, templates } from '@/components/TemplateGallery';
-import { ResumeData, useResumeContext } from '@/contexts/ResumeContext';
-import { matchResumeWithJob, parseResume, pollUntilValue } from '@/services/resumeService';
+import { useResumeContext } from '@/contexts/ResumeContext';
+import {  pollUntilValue } from '@/services/resumeService';
 import { ArrowLeft, FileText, CheckCircle2, LayoutTemplate } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import './Result.css';
 
 const Results = () => {
   const navigate = useNavigate();
@@ -43,17 +44,12 @@ const Results = () => {
 
       try {
         const parsedResume = await pollUntilValue(id);
-        setResumeData(parsedResume);
-        console.log("Extracted Value :", parsedResume);
+        setResumeData(parsedResume.extracted_resume);
+        console.log("Extracted Value :", parsedResume.extracted_resume);
       } catch (err) {
-      const parsedResume = await parseResume();
-      // Update context
-      setResumeData(parsedResume);
         console.error('Error analyzing match:', err);
+        navigate('/');
       } finally {
-        const matchResult = await matchResumeWithJob(resumeData, jobDescription);
-        setMatchScore(matchResult.matchScore);
-        setMatchHighlights(matchResult.highlights);
         setIsAnalyzing(false);
         setIsLoading(false);
         toast({
@@ -146,7 +142,7 @@ const Results = () => {
       </div>
 
       <Tabs defaultValue="resume" value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-8">
+        <TabsList className="grid w-full grid-cols-3 mb-8 ">
           <TabsTrigger value="resume" className="text-base py-3">Resume Information</TabsTrigger>
           <TabsTrigger value="template" className="text-base py-3">
             <LayoutTemplate className="h-4 w-4 mr-2" />
