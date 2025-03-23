@@ -55,6 +55,14 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({
     });
   };
 
+  const handleTeckSkillChange = (newStrings: string[]) => {
+    data.technicalSkills = newStrings;
+  };
+
+  const handleSoftSkillChange = (newStrings: string[]) => {
+    data.technicalSkills = newStrings;
+  };
+
   const removeItem = (section: keyof ResumeData, indexToRemove: number) => {
     if (!Array.isArray(data[section])) return;
 
@@ -82,60 +90,43 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({
     });
   };
 
-  const addHighlight = (section: "experience" | "projects", index: number) => {
-    if (!Array.isArray(data[section])) return;
-
+  const addHighlight = (res: any, index: number) => {
+    if (!Array.isArray(data['experience'])) return;
+    const exp = data.experience[index];
+    exp.responsibilities = [ ...exp.responsibilities, ""];
     setData({
       ...data,
-      [section]: (data[section] as any[]).map((item, i) =>
-        i === index
-          ? {
-              ...item,
-              highlights: [...(item.highlights || []), ""],
-            }
-          : item
-      ),
+      experience: [
+        ...data.experience
+      ]
     });
   };
 
-  const updateHighlight = (
-    section: "experience" | "projects",
+  const updateHighlight = (expInd,
     index: number,
     value: string
   ) => {
-    if (!Array.isArray(data[section])) return;
+    if (!Array.isArray(data['experience'])) return;
 
+    data.experience[expInd].responsibilities = data.experience[expInd].responsibilities.map((val, _i)=> index ===_i ? value : val)
     setData({
       ...data,
-      [section]: (data[section] as any[]).map((item, _i) =>
-        _i === index
-          ? {
-              ...item,
-              highlights: (item.highlights || []).map((h, i) =>
-                i === index ? value : h
-              ),
-            }
-          : item
-      ),
+      experience: [
+        ...data.experience
+      ],
     });
   };
 
-  const removeHighlight = (
-    section: "experience" | "projects",
+  const removeHighlight = (expInd,
     index: number
   ) => {
-    if (!Array.isArray(data[section])) return;
-
+    if (!Array.isArray(data['experience'])) return;
+    data.experience[expInd].responsibilities = data.experience[expInd].responsibilities.filter((val, _i)=> index !=_i)
     setData({
       ...data,
-      [section]: (data[section] as any[]).map((item, i) =>
-        i === index
-          ? {
-              ...item,
-              highlights: (item.highlights || []).filter((_, i) => i !== index),
-            }
-          : item
-      ),
+      experience: [
+        ...data.experience
+      ]
     });
   };
 
@@ -460,7 +451,7 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => addHighlight("experience", index)}
+                        onClick={() => addHighlight(exp, index)}
                         className="h-8"
                       >
                         <Plus className="h-3 w-3 mr-1" /> Add
@@ -472,14 +463,14 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({
                         <Input
                           value={highlight}
                           onChange={(e) =>
-                            updateHighlight("experience", i, e.target.value)
+                            updateHighlight(index, i, e.target.value)
                           }
                           className="flex-1"
                         />
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => removeHighlight("experience", i)}
+                          onClick={() => removeHighlight(index, i)}
                           className="text-destructive h-10 w-10"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -600,7 +591,7 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({
           <Chip
             editModeOn={activeSection === "skills"}
             initialStrings={data.technicalSkills}
-            // onChange={handleStringChange}
+            onChange={handleTeckSkillChange}
             title="Technical Skills"
             description="Add Skils"
           />
@@ -619,6 +610,7 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({
         <div className={cn("p-2 bg-blue-50/40 rounded-md")}>
           <Chip
             editModeOn={activeSection === "skills"}
+            onChange={handleSoftSkillChange}
             initialStrings={data.softSkills}
             title="Soft skills"
             description="Add skills"
