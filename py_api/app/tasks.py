@@ -14,8 +14,11 @@ def start_resume_parsing(resume_data: dict) -> dict:
     """
     try:
         resume_job = ResumeJob(resume_data.get("job_id"))
-        resume_job.generate_ats_score()
         resume_job.parse_resume()
+        resume_job.generate_ats_score("extracted_resume")
+        resume_job.rephrase_resume()
+        resume_job.generate_ats_score("rephrased_resume")
         resume_job.write_config("is_loading", False)
+
     except Exception as error:
         current_app.logger.error(f"Error in parsing resume: {error}")

@@ -28,8 +28,12 @@ def process_resume() -> dict[str, object]:
 
 @base_api.route("/resume-job/<job_id>", methods=["GET"])
 def get_resume_details(job_id: str) -> dict[str, object]:
-    resume_job = ResumeJob(job_id)
-    return resume_job.read_config()
+    try:
+        resume_job = ResumeJob(job_id)
+        return resume_job.read_config()
+    except Exception as e:
+        current_app.logger.error(f"Error in getting resume config: {e}")
+        return {"error": f"Error in getting resume data: {e}"}
 
 
 @base_api.route("/generate-resume/<job_id>/template/<template_id>", methods=["GET"])
