@@ -34,12 +34,6 @@ const Chip = ({
     }
   }, []);
 
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, []);
-
   // Notify parent component about changes
   useEffect(() => {
     setEdit(editModeOn);
@@ -64,21 +58,25 @@ const Chip = ({
       return;
     }
 
-    setStrings((prev) => [...prev, newString.trim()]);
+    const updatedString =  [...strings, newString.trim()]
+    setStrings(updatedString);
     setNewString("");
     toast({
       title: "Skill added",
       description: `"${newString.trim()}" has been added to the collection`,
     });
+    onChange(updatedString);
   };
 
   const removeString = (index: number) => {
     const removedString = strings[index];
-    setStrings((prev) => prev.filter((_, i) => i !== index));
+    const updatedString = strings.filter((_, i) => i !== index)
+    setStrings(updatedString);
     toast({
       title: "Skill removed",
       description: `"${removedString}" has been removed from the collection`,
     });
+    onChange(updatedString);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
