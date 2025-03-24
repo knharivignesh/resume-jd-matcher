@@ -1,0 +1,14 @@
+# Use official Nginx image
+FROM nginx:latest
+
+# Set the working directory
+WORKDIR /usr/share/nginx/html
+
+# Remove default Nginx static files
+RUN rm -rf ./*
+
+# Copy the static files from the build context into the container
+COPY ./../dist/ .
+
+# Start Nginx
+CMD ["nginx", "-g", "daemon off;"]
