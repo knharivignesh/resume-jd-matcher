@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
@@ -8,7 +8,7 @@ import { ResumeEditor } from '@/components/ResumeEditor';
 import { MatchResults } from '@/components/MatchResults';
 import { TemplateGallery, templates } from '@/components/TemplateGallery';
 import { useResumeContext } from '@/contexts/ResumeContext';
-import { matchResumeWithJob } from '@/services/resumeService';
+import { generateResume, matchResumeWithJob } from '@/services/resumeService';
 import { ArrowLeft, FileText, CheckCircle2, LayoutTemplate } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
@@ -19,6 +19,7 @@ const Results = () => {
     jobDescription, 
     setResumeData, 
     isLoading, 
+    resumeFile,
     setIsLoading, 
     error,
     selectedTemplate,
@@ -65,12 +66,47 @@ const Results = () => {
     navigate('/');
   };
 
+  const {id} = useParams();
+
   const handleSelectTemplate = (templateId: string) => {
     setSelectedTemplate(templateId);
     toast({
       title: "Template Applied",
       description: `Your resume now uses the ${templates.find(t => t.id === templateId)?.name} template`,
     });
+  };
+
+  const handleTemplateAction = async (action: string) => {
+    if (action === "match") {
+      setActiveTab(action);
+    } else if (action === "download") {
+      try {
+        const response = await generateResume(id, selectedTemplate, resumeData);
+        
+        // Create Blob from the response data
+        const pdfBlob = new Blob([response.data], { type: "application/pdf"});
+
+        // Create a temproary URL for the Blob
+        const url = window.URL.createObjectURL(pdfBlob);
+
+        // Create a temporary <a> element to trigger the download
+        const tempLink = document.createElement("a");
+        tempLink.href= url;
+        // Set the desired filename for the downloaded file
+        tempLink.setAttribute("download", `${resumeFile.name}_${selectedTemplate}.pdf`);
+        
+        // Append the <a> element to the body and click to trigger the download
+        document.body.appendChild(tempLink);
+        tempLink.click();
+
+        // Cleanup the temporary element and URL
+        document.body.removeChild(tempLink);
+        window.URL.revokeObjectURL(url);
+      }
+      catch (error) {
+        console.error("Error downloading PDF: ", error);
+      }
+    }
   };
 
   // Show loading state or error
