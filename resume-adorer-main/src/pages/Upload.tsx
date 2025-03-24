@@ -1,13 +1,13 @@
+import { ArrowRight, Briefcase, FileType } from 'lucide-react';
 
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { FileUpload } from '@/components/FileUpload';
 import { JobDescriptionInput } from '@/components/JobDescriptionInput';
-import { useResumeContext } from '@/contexts/ResumeContext';
 import { createJobID } from '@/services/resumeService';
+import { useNavigate } from 'react-router-dom';
+import { useResumeContext } from '@/contexts/ResumeContext';
+import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowRight, FileType, Briefcase } from 'lucide-react';
 
 const Upload = () => {
   const navigate = useNavigate();
@@ -64,23 +64,6 @@ const Upload = () => {
         description: "Error connecting to server",
         variant: "destructive",
       });
-    }
-
-    try {
-      
-      // Navigate to results page
-      navigate('/results/3');
-    } catch (error) {
-      console.error('Error processing resume:', error);
-      setError('Failed to process resume. Please try again.');
-      toast({
-        title: "Processing failed",
-        description: "There was an error processing your resume. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsProcessing(false);
-      setIsLoading(false);
     }
   };
 
