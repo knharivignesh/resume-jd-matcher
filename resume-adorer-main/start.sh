@@ -6,4 +6,4 @@ rm -rf ./node_modules ./dist
 
 docker run --network host --rm -v $(pwd):/app:z npm-base ./build.sh
 
-docker build -t resume-ui-build -f ./DockerfileUI .
+docker build -t knharivignesh/hackathon:resumeui -f ./DockerfileUI .

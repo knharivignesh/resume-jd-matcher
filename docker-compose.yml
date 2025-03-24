@@ -1,7 +1,7 @@
 services:
   api:
     build: ./py_api
-    image: resume-parser-backend
+    image: knharivignesh/hackathon:flask-app
     environment:
       - CELERY_BROKER_URL=redis://redis-server:6379/0
       - CELERY_RESULT_BACKEND=redis://redis-server:6379/0
@@ -23,7 +23,7 @@ services:
   celery:
     build: ./py_api
     command: celery -A run worker --loglevel INFO
-    image: resume-parser-celery
+    image: knharivignesh/hackathon:celeryapp
     environment:
       - CELERY_BROKER_URL=redis://redis-server:6379
       - CELERY_RESULT_BACKEND=redis://redis-server:6379
@@ -35,6 +35,6 @@ services:
 
   # Before running this run the command sh start.sh inside UI folder
   resume-ui:
-    image: resume-ui-build
+    image: knharivignesh/hackathon:resumeui
     ports:
       - "3000:3000"
