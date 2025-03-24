@@ -32,3 +32,9 @@ services:
       - redis-server
     volumes:
       - ./py_api:/py_api
+
+  # Before running this run the command sh start.sh inside UI folder
+  resume-ui:
+    image: resume-ui-build
+    ports:
+      - "80:80"
