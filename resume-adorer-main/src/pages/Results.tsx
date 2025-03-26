@@ -10,32 +10,33 @@ import React, { useEffect, useState } from "react";
 import { ResumeData, useResumeContext } from "@/contexts/ResumeContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TemplateGallery, templates } from "@/components/TemplateGallery";
+import { generateResume, pollUntilValue } from "@/services/resumeService";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { MatchResults } from "@/components/MatchResults";
 import { ResumeEditor } from "@/components/ResumeEditor";
-import { pollUntilValue } from "@/services/resumeService";
 import { toast } from "@/hooks/use-toast";
 
 const Results = () => {
   const navigate = useNavigate();
   const {
     jobDescription,
+    resumeFile,
     isLoading,
     setIsLoading,
     error,
     selectedTemplate,
     setSelectedTemplate,
   } = useResumeContext();
+
   const [resumeData, setResumeData] = useState(null);
   const [initialScore, setInitialScore] = useState(0);
   const [finalScore, setFinalScore] = useState(0);
   const [matchHighlights, setMatchHighlights] = useState<string[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [activeTab, setActiveTab] = useState("resume");
-  const { id } = useParams();
 
   useEffect(() => {
     // Redirect to upload page if no resume data
@@ -86,6 +87,8 @@ const Results = () => {
     navigate("/");
   };
 
+  const { id } = useParams();
+
   const handleSelectTemplate = (templateId: string) => {
     setSelectedTemplate(templateId);
     toast({
@@ -96,11 +99,38 @@ const Results = () => {
     });
   };
 
-  const handleTemplateAction = (action: string) => {
+  const handleTemplateAction = async (action: string) => {
     if (action === "match") {
       setActiveTab(action);
-    } else {
-      // download template
+    } else if (action === "download") {
+      try {
+        const response = await generateResume(id, selectedTemplate, resumeData);
+
+        // Create Blob from the response data
+        const pdfBlob = new Blob([response.data], { type: "application/pdf" });
+
+        // Create a temproary URL for the Blob
+        const url = window.URL.createObjectURL(pdfBlob);
+
+        // Create a temporary <a> element to trigger the download
+        const tempLink = document.createElement("a");
+        tempLink.href = url;
+        // Set the desired filename for the downloaded file
+        tempLink.setAttribute(
+          "download",
+          `${resumeFile.name}_${selectedTemplate}.pdf`
+        );
+
+        // Append the <a> element to the body and click to trigger the download
+        document.body.appendChild(tempLink);
+        tempLink.click();
+
+        // Cleanup the temporary element and URL
+        document.body.removeChild(tempLink);
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error("Error downloading PDF: ", error);
+      }
     }
   };
 

@@ -1,6 +1,8 @@
 import axios, { AxiosResponse } from "axios";
 
-export const BASE_ENDPOINT_URL = "http://localhost:8000";
+import { ResumeData } from "@/contexts/ResumeContext";
+
+export const BASE_ENDPOINT_URL = "https://data-dynamos.payoda.net/api";
 
 export const createJobID = async (
   file: File,
@@ -33,3 +35,20 @@ export const pollUntilValue = async (jobID: string, interval = 5000) => {
 function checkConditionFn(data) {
   return !data.is_loading;
 }
+
+export const generateResume = async (
+  job_id: string,
+  template_id: string,
+  resume_data: ResumeData
+): Promise<AxiosResponse> => {
+  const formData = new FormData();
+  formData.append("resume_data", JSON.stringify(resume_data));
+  return axios.post(
+    `${BASE_ENDPOINT_URL}generate-resume/${job_id}/template/${template_id}`,
+    formData,
+    {
+      headers: { "Content-Type": "multipart/form-data" },
+      responseType: "blob",
+    }
+  );
+};
