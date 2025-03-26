@@ -36,10 +36,12 @@ def get_resume_details(job_id: str) -> dict[str, object]:
         return {"error": f"Error in getting resume data: {e}"}
 
 
-@base_api.route("/generate-resume/<job_id>/template/<template_id>", methods=["GET"])
+@base_api.route("/generate-resume/<job_id>/template/<template_id>", methods=["POST"])
 def write_pdf(job_id: str, template_id: str):
     resume_job = ResumeJob(job_id)
-    resume_job.generate_final_pdf(template_id)
+    resume_data = request.form.get("resume_data")
+
+    resume_job.generate_final_pdf(template_id, resume_data)
     path = os.path.join(
         "..",
         Config.UPLOAD_PATH,

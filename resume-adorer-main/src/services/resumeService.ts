@@ -3,6 +3,7 @@ import axios, { AxiosResponse } from "axios";
 import { ResumeData } from "@/contexts/ResumeContext";
 
 export const BASE_ENDPOINT_URL = "https://data-dynamos.payoda.net/api";
+// export const BASE_ENDPOINT_URL = "http://localhost:8000";
 
 export const createJobID = async (
   file: File,
@@ -44,7 +45,7 @@ export const generateResume = async (
   const formData = new FormData();
   formData.append("resume_data", JSON.stringify(resume_data));
   return axios.post(
-    `${BASE_ENDPOINT_URL}generate-resume/${job_id}/template/${template_id}`,
+    `${BASE_ENDPOINT_URL}/generate-resume/${job_id}/template/${template_id}`,
     formData,
     {
       headers: { "Content-Type": "multipart/form-data" },

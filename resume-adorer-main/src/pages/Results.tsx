@@ -118,7 +118,7 @@ const Results = () => {
         // Set the desired filename for the downloaded file
         tempLink.setAttribute(
           "download",
-          `${resumeFile.name}_${selectedTemplate}.pdf`
+          `resume_${selectedTemplate}.pdf`
         );
 
         // Append the <a> element to the body and click to trigger the download
