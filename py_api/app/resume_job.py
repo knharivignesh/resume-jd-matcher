@@ -202,9 +202,10 @@ class ResumeJob:
 
     def generate_ats_score(self, key):
         prompt = """
-                You are a skilled ATS (Applicant Tracking System) scanner with a deep understanding of data science and ATS functionality.
-                You are given a resume and a job description.
-                Your task is to evaluate the resume against the job description and provide only the ATS score without the percentage sign or any additional explanation.
+                You are a skilled ATS (Applicant Tracking System) scanner with a deep understanding of data science and ATS 
+                functionality. You are given a resume and a job description.
+                Your task is to evaluate the resume against the job description and provide only the ATS score 
+                without the percentage sign or any additional explanation.
                 """
         resume_config = self.read_config()
 
