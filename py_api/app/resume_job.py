@@ -230,8 +230,9 @@ class ResumeJob:
 
         self.write_config(f"{key}_ats_score", data)
 
-    def generate_final_pdf(self, template_id):
-        data = self.read_config()["extracted_resume"]
+    def generate_final_pdf(self, template_id, resume_data):
+        self.write_config("rephrased_resume", json.loads(resume_data))
+        data = self.read_config()["rephrased_resume"]
         self.generate_resume(
             data,
             template_id,

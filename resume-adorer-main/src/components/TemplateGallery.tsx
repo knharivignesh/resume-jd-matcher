@@ -25,29 +25,53 @@ interface TemplateGalleryProps {
 
 export const templates: ResumeTemplate[] = [
   {
-    id: "classic",
-    name: "Classic",
+    id: "template_1",
+    name: "Template 1",
     description: "Traditional resume style with a clean, professional look",
     icon: <FileText />,
     primaryColor: "bg-blue-600",
     secondaryColor: "bg-blue-100",
   },
   {
-    id: "modern",
-    name: "Modern",
+    id: "template_2",
+    name: "Template 2",
+    description: "Traditional resume style with a clean, professional look",
+    icon: <FileText />,
+    primaryColor: "bg-blue-600",
+    secondaryColor: "bg-blue-100",
+  },
+  {
+    id: "template_3",
+    name: "Template 3",
     description: "Contemporary design with bold headings and clean sections",
     icon: <LayoutTemplate />,
     primaryColor: "bg-emerald-600",
     secondaryColor: "bg-emerald-100",
   },
   {
-    id: "minimalist",
-    name: "Minimalist",
+    id: "template_4",
+    name: "Template 4",
+    description: "Contemporary design with bold headings and clean sections",
+    icon: <LayoutTemplate />,
+    primaryColor: "bg-emerald-600",
+    secondaryColor: "bg-emerald-100",
+  },
+  {
+    id: "template_5",
+    name: "Template 5",
     description: "Simple, elegant design focused on content",
     icon: <FileText />,
     primaryColor: "bg-slate-700",
     secondaryColor: "bg-slate-100",
   },
+  {
+    id: "template_6",
+    name: "Template 6",
+    description: "Simple, elegant design focused on content",
+    icon: <FileText />,
+    primaryColor: "bg-slate-700",
+    secondaryColor: "bg-slate-100",
+  }
 ];
 
 export const TemplateGallery: React.FC<TemplateGalleryProps> = ({

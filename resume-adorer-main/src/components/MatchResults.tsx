@@ -77,7 +77,7 @@ export const MatchResults: React.FC<MatchResultsProps> = ({
 
         <Separator className="my-4" />
 
-        <div className="space-y-4">
+        {/* <div className="space-y-4">
           <h3 className="font-medium text-lg">Key Insights</h3>
 
           <ul className="space-y-3">
@@ -101,7 +101,7 @@ export const MatchResults: React.FC<MatchResultsProps> = ({
               );
             })}
           </ul>
-        </div>
+        </div> */}
       </Card>
       <div className="flex justify-end mt-4">
         <Button onClick={handlePrevious} className={cn("px-8")}>
