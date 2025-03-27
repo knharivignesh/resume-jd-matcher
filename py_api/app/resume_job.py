@@ -89,13 +89,12 @@ class ResumeJob:
                     4. Any unrelated experience is either kept concise or reframed to highlight transferable skills, but never fabricated.
                     5. Format the output in the same structure as the original resume. Do not introduce any new experiences, 
                     job roles, or skills that the candidate has not mentioned.
-                    6.The rephrased content seamlessly integrates into predefined templates (PDF, DOC) while preserving consistency. 
+                    6.The rephrased content seamlessly integrates into predefined templates (PDF) while preserving consistency. 
                     instead of making assumptions or adding false information. 
                     7. The final output should present the candidates true qualifications in a way that maximizes relevance for the given 
                     role without misrepresentation.
                     8. You can reorder the points if needed to match the job description.
-                    9. Mainly if the ATS score is below 10 between resume and JD give gaps and omit other JSON fields in the output.
-                    This should happen if ATS score is below 10 only otherwise give entire data.
+                    9. Mainly if the ATS score low between resume and JD give gaps also in the output.
                     
                 The answer needs to be in JSON format which follows the below given structure also the input will be in this same format.
                 {
@@ -118,7 +117,6 @@ class ResumeJob:
                     "achievements": [],
                     "gaps": []
                 }
-
                 """
 
         resume_config = self.read_config()

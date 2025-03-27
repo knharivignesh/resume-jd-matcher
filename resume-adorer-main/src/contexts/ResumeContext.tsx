@@ -68,7 +68,7 @@ export const ResumeProvider: React.FC<{ children: ReactNode }> = ({
   const [jobDescription, setJobDescription] = useState<JobDescription>("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedTemplate, setSelectedTemplate] = useState("template_1");
+  const [selectedTemplate, setSelectedTemplate] = useState("template_2");
 
   return (
     <ResumeContext.Provider
