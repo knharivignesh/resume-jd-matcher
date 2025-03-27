@@ -24,21 +24,21 @@ interface TemplateGalleryProps {
 }
 
 export const templates: ResumeTemplate[] = [
-  {
-    id: "template_1",
-    name: "Template 1",
-    description: "Traditional resume style with a clean, professional look",
-    icon: <FileText />,
-    primaryColor: "bg-blue-600",
-    secondaryColor: "bg-blue-100",
-  },
+  // {
+  //   id: "template_1",
+  //   name: "Template 1",
+  //   description: "Traditional resume style with a clean, professional look",
+  //   icon: <FileText />,
+  //   primaryColor: "bg-blue-600",
+  //   secondaryColor: "bg-blue-100",
+  // },
   {
     id: "template_2",
     name: "Template 2",
     description: "Traditional resume style with a clean, professional look",
     icon: <FileText />,
-    primaryColor: "bg-blue-600",
-    secondaryColor: "bg-blue-100",
+    primaryColor: "bg-emerald-600",
+    secondaryColor: "bg-emerald-100",
   },
   {
     id: "template_3",
@@ -61,16 +61,16 @@ export const templates: ResumeTemplate[] = [
     name: "Template 5",
     description: "Simple, elegant design focused on content",
     icon: <FileText />,
-    primaryColor: "bg-slate-700",
-    secondaryColor: "bg-slate-100",
+    primaryColor: "bg-emerald-600",
+    secondaryColor: "bg-emerald-100",
   },
   {
     id: "template_6",
     name: "Template 6",
     description: "Simple, elegant design focused on content",
     icon: <FileText />,
-    primaryColor: "bg-slate-700",
-    secondaryColor: "bg-slate-100",
+    primaryColor: "bg-emerald-600",
+    secondaryColor: "bg-emerald-100",
   }
 ];
 
